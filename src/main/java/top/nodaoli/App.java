@@ -19,7 +19,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 640, 400);
         stage.setScene(scene);
-        stage.setTitle("Windows 软连接创建工具");
+        stage.setTitle("Windows 软链接创建工具");
         stage.setResizable(false);
         stage.show();
     }

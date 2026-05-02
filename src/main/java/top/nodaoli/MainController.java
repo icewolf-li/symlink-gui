@@ -12,6 +12,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 
 public class MainController {
 
@@ -20,6 +22,46 @@ public class MainController {
 
     @FXML
     private TextField targetPathField;
+
+    @FXML
+    public void initialize() {
+        setupDragAndDrop(sourcePathField);
+        setupDragAndDrop(targetPathField);
+    }
+
+    private void setupDragAndDrop(TextField textField) {
+        textField.setOnDragOver((DragEvent event) -> {
+            if (event.getGestureSource() != textField && event.getDragboard().hasFiles()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            event.consume();
+        });
+
+        textField.setOnDragDropped((DragEvent event) -> {
+            boolean success = false;
+            if (event.getDragboard().hasFiles()) {
+                File file = event.getDragboard().getFiles().get(0);
+                String droppedPath = file.getAbsolutePath();
+                
+                if (textField == targetPathField && file.isDirectory()) {
+                    String sourceStr = sourcePathField.getText();
+                    if (sourceStr != null && !sourceStr.trim().isEmpty()) {
+                        File sourceFile = new File(sourceStr);
+                        droppedPath = new File(file, sourceFile.getName()).getAbsolutePath();
+                    } else {
+                        if (!droppedPath.endsWith(File.separator)) {
+                            droppedPath += File.separator;
+                        }
+                    }
+                }
+                
+                textField.setText(droppedPath);
+                success = true;
+            }
+            event.setDropCompleted(success);
+            event.consume();
+        });
+    }
 
     @FXML
     void onBrowseSourceFile(ActionEvent event) {
@@ -44,7 +86,7 @@ public class MainController {
     @FXML
     void onBrowseTarget(ActionEvent event) {
         DirectoryChooser dirChooser = new DirectoryChooser();
-        dirChooser.setTitle("选择软连接保存目录");
+        dirChooser.setTitle("选择软链接保存目录");
         File dir = dirChooser.showDialog(null);
         if (dir != null) {
             String targetPath = dir.getAbsolutePath();
@@ -79,8 +121,16 @@ public class MainController {
             return;
         }
 
+        if (Files.isDirectory(targetPath)) {
+            Path fileName = sourcePath.getFileName();
+            if (fileName != null) {
+                targetPath = targetPath.resolve(fileName);
+                targetPathField.setText(targetPath.toString());
+            }
+        }
+
         if (Files.exists(targetPath)) {
-            showAlert(Alert.AlertType.ERROR, "错误", "软连接目标路径已存在，请指定一个不存在的文件名！");
+            showAlert(Alert.AlertType.ERROR, "错误", "软链接目标路径已存在，请指定一个不存在的文件名！");
             return;
         }
 
@@ -92,14 +142,14 @@ public class MainController {
             } else {
                 command = String.format("cmd /c mklink \"%s\" \"%s\"", targetPath.toString(), sourcePath.toString());
             }
-            
+
             Process process = Runtime.getRuntime().exec(command);
             int exitCode = process.waitFor();
-            
+
             if (exitCode == 0) {
-                showAlert(Alert.AlertType.INFORMATION, "成功", "软连接创建成功！\n" + targetPath.toString());
+                showAlert(Alert.AlertType.INFORMATION, "成功", "软链接创建成功！\n" + targetPath.toString());
             } else {
-                showAlert(Alert.AlertType.ERROR, "失败", "软连接创建失败，可能需要管理员权限，或开启开发者模式。");
+                showAlert(Alert.AlertType.ERROR, "失败", "软链接创建失败，可能需要管理员权限，或开启开发者模式。");
             }
 
         } catch (Exception e) {

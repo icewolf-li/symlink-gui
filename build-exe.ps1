@@ -15,15 +15,16 @@ if (Test-Path "target\installer") {
 
 # 使用 app-image 可以在不需要安装 WiX Toolset 的情况下生成带有 exe 启动器的独立运行目录
 jpackage --type app-image `
-         --name "SymlinkGUI" `
-         --description "Windows 软连接创建工具" `
-         --app-version "1.0.0" `
-         --module-path "target\symlink-gui-1.0-SNAPSHOT.jar;target\lib" `
-         --module top.nodaoli/top.nodaoli.App `
-         --dest target\installer
+    --name "SymlinkGUI" `
+    --description "Windows 软链接创建工具" `
+    --app-version "1.0.0" `
+    --module-path "target\symlink-gui-1.0-SNAPSHOT.jar;target\lib" `
+    --module top.nodaoli/top.nodaoli.App `
+    --dest target\installer
 
 if ($LASTEXITCODE -eq 0 -or $LASTEXITCODE -eq $null) {
     Write-Host "打包成功！请打开目录查看: target\installer\SymlinkGUI" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "打包失败，请检查 jpackage 错误日志。" -ForegroundColor Red
 }

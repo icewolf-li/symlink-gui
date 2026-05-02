@@ -16,7 +16,7 @@
                   <Font size="22.0" />
                </font>
             </Label>
-            <Label layoutX="34.0" layoutY="127.0" prefHeight="40.0" prefWidth="177.0" text="软连接路径">
+            <Label layoutX="34.0" layoutY="127.0" prefHeight="40.0" prefWidth="177.0" text="软链接路径">
                <font>
                   <Font size="22.0" />
                </font>
