@@ -17,8 +17,8 @@ if (Test-Path "target\installer") {
 jpackage --type app-image `
     --name "SymlinkGUI" `
     --description "Windows 软链接创建工具" `
-    --app-version "1.0.0" `
-    --module-path "target\symlink-gui-1.0-SNAPSHOT.jar;target\lib" `
+    --app-version "1.1" `
+    --module-path "target\symlink-gui-1.1.jar;target\lib" `
     --module top.nodaoli/top.nodaoli.App `
     --dest target\installer
 
